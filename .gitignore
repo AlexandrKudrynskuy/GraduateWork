@@ -397,3 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 .NetPart/TradeAssistant/TradeAssistant/appsettings.json
+.NetPart/TradeAssistant/TradeAssistant/appsettings.Development.json
+.NetPart/TradeAssistant/TradeAssistant/appsettings.Development.json
