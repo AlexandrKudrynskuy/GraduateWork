@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Configuration;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -22,7 +23,10 @@ namespace TradeAssistant.Infrastructure
         public void ConfigureService()
         {
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<TradeAssistantContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("myConStringn")));
+          builder.Services.AddTransient<TradeAssistantContext>();
+
+          
+            builder.Services.AddDbContext<TradeAssistantContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStore")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TradeAssistantContext>().AddDefaultTokenProviders();
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
