@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TradeAssistant.Models;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace TradeAssistant.Controllers
 {
@@ -24,7 +25,9 @@ namespace TradeAssistant.Controllers
 
         public async Task<Response> Registration([FromBody] RegisterModel registerModel)
         {
-                var isExistUser = await _userManager.FindByNameAsync(registerModel.Name);
+
+           // userId = _userManager.Users.First(x => x.UserName == _userManager.GetUserId(HttpContext.User)).Id;
+            var isExistUser = await _userManager.FindByNameAsync(registerModel.Name);
                 if (isExistUser != null)
                 {
                     return new Response { Message = "User is exist", Status = "not" };
