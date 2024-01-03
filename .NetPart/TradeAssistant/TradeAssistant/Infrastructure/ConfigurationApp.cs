@@ -22,65 +22,74 @@ namespace TradeAssistant.Infrastructure
 
         public void ConfigureService()
         {
-            builder.Services.AddControllersWithViews();
-          builder.Services.AddTransient<TradeAssistantContext>();
+            try
+            {
+                builder.Services.AddControllersWithViews();
+                builder.Services.AddTransient<TradeAssistantContext>();
 
-          
-            builder.Services.AddDbContext<TradeAssistantContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStore")));
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TradeAssistantContext>().AddDefaultTokenProviders();
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-                options.JsonSerializerOptions.WriteIndented = true;
-            });
-            builder.Services.Configure<IdentityOptions>(options =>
-            {
-                // Default Password settings.
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 3;
-               // options.Password.RequiredUniqueChars = 1;
-            });
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    builder =>
+                builder.Services.AddDbContext<TradeAssistantContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStore")));
+                builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TradeAssistantContext>().AddDefaultTokenProviders();
+                builder.Services.AddControllers().AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+                    options.JsonSerializerOptions.WriteIndented = true;
+                });
+                builder.Services.Configure<IdentityOptions>(options =>
+                {
+                    // Default Password settings.
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 3;
+                    // options.Password.RequiredUniqueChars = 1;
+                });
+                builder.Services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(
+                        builder =>
+                        {
+
+                            //you can configure your custom policy
+                            builder.AllowAnyOrigin()
+                                                .AllowAnyHeader()
+                                                .AllowAnyMethod();
+                        });
+                });
+                builder.Services.AddAuthentication(op =>
+                {
+                    op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                }
+                ).AddJwtBearer(op =>
+                {
+                    op.SaveToken = true;
+                    op.RequireHttpsMetadata = false;
+                    op.TokenValidationParameters = new TokenValidationParameters()
                     {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                        ValidIssuer = builder.Configuration["JWT:ValidIssuier"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
 
-                        //you can configure your custom policy
-                        builder.AllowAnyOrigin()
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                    });
-            });
-            builder.Services.AddAuthentication(op =>
-            {
-                op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                    };
+                });
+
+                builder.Services.AddApplicationInsightsTelemetry();
 
             }
-            ).AddJwtBearer(op =>
-       {
-           op.SaveToken = true;
-           op.RequireHttpsMetadata = false;
-           op.TokenValidationParameters = new TokenValidationParameters()
-           {
-               ValidateIssuer = true,
-               ValidateAudience = true,
-               ValidAudience = builder.Configuration["JWT:ValidAudience"],
-               ValidIssuer = builder.Configuration["JWT:ValidIssuier"],
-               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            catch (Exception ex)
+            {
 
-
-           };
-       });
-
-            builder.Services.AddApplicationInsightsTelemetry();
+                throw;
+            }
         }
     }
 }
