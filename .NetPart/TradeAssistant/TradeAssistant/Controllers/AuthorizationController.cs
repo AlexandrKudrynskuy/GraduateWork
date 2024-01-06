@@ -123,17 +123,18 @@ namespace TradeAssistant.Controllers
 
 
         [HttpGet]
-        [Route("ManagerRoles")]
-        public async Task<IActionResult> ManageRoles(string Id)
+        [Route("RoleManager")]
+        public async Task<IActionResult> RoleManager(string id)
         {
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
             var roles = await _roleManager.Roles.Select(x => x.Name).ToListAsync();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var model = new UserRoleManagerViewModel {
+            var model = new UserRoleManagerViewModel
+            {
                 ApplicationUser = user,
                 Roles = roles,
                 UserRoles = userRoles,
@@ -142,8 +143,8 @@ namespace TradeAssistant.Controllers
             return Ok(model);
         }
         [HttpPost]
-        [Route("ManagerRoles")]
-        public async Task<IActionResult> ManageRoles(string Id, UserRoleManagerViewModel model)
+        [Route("RoleManager")]
+        public async Task<IActionResult> RoleManager(string Id, UserRoleManagerViewModel model)
         {
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
@@ -174,5 +175,9 @@ namespace TradeAssistant.Controllers
         {
             return await _userManager.Users.ToListAsync();
         }
+
+
+
+      
     }
 }
