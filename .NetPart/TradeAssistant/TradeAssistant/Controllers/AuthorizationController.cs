@@ -11,7 +11,6 @@ using TradeAssistant.Models;
 using Microsoft.IdentityModel.JsonWebTokens;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TradeAssistant.Controllers
 {
@@ -123,10 +122,9 @@ namespace TradeAssistant.Controllers
         }
 
 
-        [HttpPost]
-        [Route("ManagerRolesGet")]
-        [Authorize]
-        public async Task<IActionResult> ManagerRolesGet([FromBody]string id)
+        [HttpGet]
+        [Route("RoleManager")]
+        public async Task<IActionResult> RoleManager(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
@@ -135,7 +133,8 @@ namespace TradeAssistant.Controllers
             }
             var roles = await _roleManager.Roles.Select(x => x.Name).ToListAsync();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var model = new UserRoleManagerViewModel {
+            var model = new UserRoleManagerViewModel
+            {
                 ApplicationUser = user,
                 Roles = roles,
                 UserRoles = userRoles,
@@ -143,39 +142,42 @@ namespace TradeAssistant.Controllers
             };
             return Ok(model);
         }
-        //[HttpPost]
-        //[Route("ManagerRoles")]
-        //public async Task<IActionResult> ManagerRoles(string Id, UserRoleManagerViewModel model)
-        //{
-        //    var user = await _userManager.FindByIdAsync(Id);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var selectedRoles = model.SelectedRoles ?? new string[] { };
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    var result = await _userManager.AddToRolesAsync(user, selectedRoles);
-        //    if (!result.Succeeded)
-        //    {
-        //        return Ok(new Response { Status = "Error", Message = "Failed to add roles to user" });
-        //    }
-        //    result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+        [HttpPost]
+        [Route("RoleManager")]
+        public async Task<IActionResult> RoleManager(string Id, UserRoleManagerViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var selectedRoles = model.SelectedRoles ?? new string[] { };
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles);
+            if (!result.Succeeded)
+            {
+                return Ok(new Response { Status = "Error", Message = "Failed to add roles to user" });
+            }
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
-        //    if (!result.Succeeded)
-        //    {
-        //        return Ok(new Response { Status = "Error", Message = "Failed to remove roles to user" });
-        //    }
-        //    return Ok(new Response { Status = "Ok", Message = "Roles Add" });
+            if (!result.Succeeded)
+            {
+                return Ok(new Response { Status = "Error", Message = "Failed to remove roles to user" });
+            }
+            return Ok(new Response { Status = "Ok", Message = "Roles Add" });
 
-        //}
+        }
 
-        
+
         [HttpGet]
         [Route("GetAllUser")]
-        [Authorize]
         public async Task<List<ApplicationUser>> GetAllUser()
         {
             return await _userManager.Users.ToListAsync();
         }
+
+
+
+      
     }
 }
