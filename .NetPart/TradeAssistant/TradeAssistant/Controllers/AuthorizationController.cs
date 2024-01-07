@@ -66,7 +66,17 @@ namespace TradeAssistant.Controllers
                 {
                     _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Client });
                 }
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                {
+                    _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Admin });
+                }
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Manager))
+                {
+                    _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Manager });
+                }
                 await _userManager.AddToRoleAsync(appUser, UserRoles.Client);
+                await _userManager.AddToRoleAsync(appUser, UserRoles.Manager);
+                await _userManager.AddToRoleAsync(appUser, UserRoles.Admin);
 
                 return new Response { Message = "User register", Status = "ok" };
             }
