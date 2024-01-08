@@ -154,25 +154,31 @@ namespace TradeAssistant.Controllers
         }
         [HttpPost]
         [Route("RoleManager")]
-        public async Task<IActionResult> RoleManager(string Id, UserRoleManagerViewModel model)
+        public async Task<IActionResult> RoleManager([FromBody]UserRoleManagerViewModel model)
         {
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _userManager.FindByIdAsync(model.ApplicationUser.Id);
             if (user == null)
             {
                 return NotFound();
             }
             var selectedRoles = model.SelectedRoles ?? new string[] { };
             var userRoles = await _userManager.GetRolesAsync(user);
-            var result = await _userManager.AddToRolesAsync(user, selectedRoles);
-            if (!result.Succeeded)
-            {
-                return Ok(new Response { Status = "Error", Message = "Failed to add roles to user" });
-            }
-            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+            var result = await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+
+
+
+        
+
 
             if (!result.Succeeded)
             {
                 return Ok(new Response { Status = "Error", Message = "Failed to remove roles to user" });
+            }
+            result = await _userManager.AddToRolesAsync(user, selectedRoles);
+            if (!result.Succeeded)
+            {
+                return Ok(new Response { Status = "Error", Message = "Failed to add roles to user" });
             }
             return Ok(new Response { Status = "Ok", Message = "Roles Add" });
 
