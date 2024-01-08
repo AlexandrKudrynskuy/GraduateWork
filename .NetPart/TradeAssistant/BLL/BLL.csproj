@@ -10,8 +10,4 @@
     <ProjectReference Include="..\DLL\DLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

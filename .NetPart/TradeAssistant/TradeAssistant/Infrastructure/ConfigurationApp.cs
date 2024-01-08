@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Configuration;
 using System.Text;
 using System.Text.Json.Serialization;
+using DLL.Repository;
+using BLL.Services;
 
 namespace TradeAssistant.Infrastructure
 {
@@ -26,7 +28,8 @@ namespace TradeAssistant.Infrastructure
             {
                 builder.Services.AddControllersWithViews();
                 builder.Services.AddTransient<TradeAssistantContext>();
-
+                builder.Services.AddTransient<TestRepository>();
+                builder.Services.AddTransient<TestService>();
 
                 builder.Services.AddDbContext<TradeAssistantContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStore")));
                 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TradeAssistantContext>().AddDefaultTokenProviders();
