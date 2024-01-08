@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace DLL.Repository
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<TEntity> 
     {
-        Task  CreateAsync(T entity);
-        Task UpdateAsync(int id, T newEntity );
-        Task DeleteAsync(int id);
-        Task<IEnumerable<T>> GetFromConditionAsync(Expression<Func<T, bool>> condition);
+        Task<OperationDetails>  CreateAsync(TEntity entity);
+       
+        Task<IEnumerable<TEntity>> GetFromConditionAsync(Expression<Func<TEntity, bool>> condition);
     }
 }
